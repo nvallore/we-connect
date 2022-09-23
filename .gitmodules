@@ -4,7 +4,7 @@
 
 [submodule "we-connect"]
 	path = we-connect
-	url = https://github.com/nvallore/we-connect-frontend.git
+	url = https://github.com/nvallore/we-connect.git
 
 [submodule "ms_auth"]
 	path = ms_auth
