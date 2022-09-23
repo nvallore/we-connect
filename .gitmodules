@@ -1,0 +1,23 @@
+[submodule "we-connect-frontend"]
+	path = we-connect-frontend
+	url = https://github.com/nvallore/we-connect-frontend.git
+
+[submodule "we-connect"]
+	path = we-connect
+	url = https://github.com/nvallore/we-connect-frontend.git
+
+[submodule "ms_auth"]
+	path = ms_auth
+	url = https://github.com/thakkarpragya/ms_auth.git
+
+[submodule "ms_dashboard"]
+	path = ms_dashboard
+	url = https://github.com/thakkarpragya/ms_dashboard.git
+
+[submodule "ms_profile"]
+	path = ms_profile
+	url = https://github.com/thakkarpragya/ms_profile.git
+	
+[submodule "we-connect-scheduler"]
+	path = we-connect-scheduler
+	url = https://github.com/caput-draconis/we-connect-scheduler.git
