@@ -1,0 +1,145 @@
+version: '3.8'
+services:
+
+  auth-db:
+    image: postgres
+    restart: always
+    container_name: auth-db
+    volumes:
+      - ./ms_auth/data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    command: -p 5432
+    ports:
+      - "5432:5432"
+
+  auth-backend:
+    build:
+      context: ./ms_auth
+      dockerfile: DockerFile
+    restart: always
+    command: bash -c 'python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
+    ports:
+      - 8000:8000
+    environment:
+      - DB_HOST=auth-db
+      - DB_NAME=auth_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+    volumes:
+      - .:/ms_auth/app
+    depends_on:
+      - auth-db
+
+  profile-db:
+    image: postgres
+    container_name: profile-db
+    restart: always
+    volumes:
+      - ./ms_profile/data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=profile_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    command: -p 5433
+    ports:
+      - "5433:5433"
+
+  profile-backend:
+    build:
+      context: ./ms_profile
+      dockerfile: DockerFile
+    restart: always
+    command: bash -c 'python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8001'
+    ports:
+      - 8001:8001
+    environment:
+      - DB_HOST=profile-db
+      - DB_NAME=profile_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5433
+    volumes:
+      - .:/ms_profile/app
+    depends_on:
+      - profile-db
+
+  scheduler-db:
+    image: postgres
+    container_name: scheduler-db
+    restart: always
+    volumes:
+      - ./we-connect-scheduler/data/db:/var/lib/postgres/data
+    environment:
+      - POSTGRES_DB=scheduler
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    command: -p 5434
+    ports:
+      - "5434:5434"
+
+  scheduler-backend:
+    build:
+      context: ./we-connect-scheduler
+      dockerfile: DockerFile
+    restart: always
+    command: bash -c 'npx prisma migrate deploy && npx prisma generate && PORT=3001 node index.js'
+    ports:
+      - 3001:3001
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@scheduler-db:5434/scheduler?schema=public
+    volumes:
+      - .:/we-connect-scheduler/app
+    depends_on:
+      - scheduler-db
+
+  # dashboard-db:
+  #   image: postgres
+  #   container_name: dashboard-db
+  #   restart: always
+  #   volumes:
+  #     - ./ms_dashboard/data/db:/var/lib/dashboard/data
+  #   environment:
+  #     - POSTGRES_DB=dashboard_db
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   command: -p 5435
+  #   ports:
+  #     - "5435:5435"
+
+  # dashboard-backend:
+  #   build:
+  #     context: ./ms_dashboard
+  #     dockerfile: DockerFile
+  #   restart: always
+  #   command: bash -c 'python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8002'
+  #   ports:
+  #     - 8002:8002
+  #   environment:
+  #     - DB_HOST=dashboard-db
+  #     - DB_NAME=dashboard_db
+  #     - DB_PORT=5435
+  #     - DB_USER=postgres
+  #     - DB_PASSWORD=postgres
+  #   volumes:
+  #     - .:/ms_dashboard/app
+  #   depends_on:
+  #     - dashboard-db
+
+        
+  # api-gateway:
+  #   image: nginx:1.17.10
+  #   container_name: api-gateway
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #       - auth-backend
+  #       - profile-backend
+  #       - scheduler-backend
+
+  

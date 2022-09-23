@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: scheduler-backend
+  name: scheduler-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: scheduler-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: scheduler-backend
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - npx prisma migrate deploy && npx prisma generate && PORT=3001 node index.js
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:postgres@scheduler-db:5434/scheduler
+          image: scheduler-backend
+          name: scheduler-backend
+          ports:
+            - containerPort: 3001
+          resources: {}
+          volumeMounts:
+            - mountPath: /we-connect-scheduler/app
+              name: scheduler-backend-claim0
+      restartPolicy: Always
+      volumes:
+        - name: scheduler-backend-claim0
+          persistentVolumeClaim:
+            claimName: scheduler-backend-claim0
+status: {}

@@ -1,0 +1,57 @@
+###########################
+# Deployment
+###########################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-backend
+  labels:
+    app: auth-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-backend
+  template:
+    metadata:
+      labels:
+        app: auth-backend
+    spec:
+      containers:
+      - args:
+            - bash
+            - -c
+            - python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+        name: auth-backend
+        image: nvallore/ms_auth
+        ports:
+          - containerPort: 8000
+        env:
+          - name: DB_HOST
+            value: auth-db
+          - name: DB_NAME
+            value: auth_db
+          - name: DB_PASSWORD
+            value: postgres
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_USER
+            value: postgres
+
+---
+###########################
+# Cluster IP Service
+###########################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-backend
+spec:
+  selector:
+    app: auth-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

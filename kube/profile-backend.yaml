@@ -1,0 +1,57 @@
+###########################
+# Deployment
+###########################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-backend
+  labels:
+    app: profile-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile-backend
+  template:
+    metadata:
+      labels:
+        app: profile-backend
+    spec:
+      containers:
+      - args:
+            - bash
+            - -c
+            - python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8001
+        name: profile-backend
+        image: nvallore/ms_profile
+        ports:
+          - containerPort: 8001
+        env:
+          - name: DB_HOST
+            value: profile-db
+          - name: DB_NAME
+            value: profile_db
+          - name: DB_PASSWORD
+            value: postgres
+          - name: DB_PORT
+            value: "5433"
+          - name: DB_USER
+            value: postgres
+
+---
+###########################
+# Cluster IP Service
+###########################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-backend
+spec:
+  selector:
+    app: profile-backend
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001

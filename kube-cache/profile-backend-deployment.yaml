@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: profile-backend
+  name: profile-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: profile-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: profile-backend
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8001
+          env:
+            - name: DB_HOST
+              value: profile-db
+            - name: DB_NAME
+              value: profile_db
+            - name: DB_PASSWORD
+              value: postgres
+            - name: DB_PORT
+              value: "5433"
+            - name: DB_USER
+              value: postgres
+          image: profile-backend
+          name: profile-backend
+          ports:
+            - containerPort: 8001
+          resources: {}
+          volumeMounts:
+            - mountPath: /ms_profile/app
+              name: profile-backend-claim0
+      restartPolicy: Always
+      volumes:
+        - name: profile-backend-claim0
+          persistentVolumeClaim:
+            claimName: profile-backend-claim0
+status: {}
