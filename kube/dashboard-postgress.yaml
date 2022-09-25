@@ -1,54 +1,54 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: auth-db
+  name: dashboard-db
 spec:
   accessModes:
     - ReadWriteOnce
   capacity:
     storage: 200M
   hostPath:
-    path: /data/auth/postgres
+    path: /data/dashboard/postgres
   storageClassName: standard
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: auth-db
+  name: dashboard-db
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 200M
-  volumeName: auth-db
+  volumeName: dashboard-db
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: auth-db
+  name: dashboard-db
   labels:
-    app: auth-db
+    app: dashboard-db
     role: service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth-db
+      app: dashboard-db
       role: service
-  serviceName: auth-db
+  serviceName: dashboard-db
   template:
     metadata:
       labels:
-        app: auth-db
+        app: dashboard-db
         role: service
     spec:
       containers:
-        - name: auth-db
+        - name: dashboard-db
           image: postgres
           args:
             - -p
-            - "5432"
+            - "5435"
           env:
             - name: POSTGRES_DB
               value: auth_db
@@ -57,32 +57,31 @@ spec:
             - name: POSTGRES_USER
               value: postgres
           ports:
-            - containerPort: 5432
-              name: auth-db
+            - containerPort: 5435
+              name: dashboard-db
               protocol: TCP
           volumeMounts:
-            - name: auth-db
+            - name: dashboard-db
               mountPath: /var/lib/postgresql/data
       volumes:
-        - name: auth-db
+        - name: dashboard-db
           persistentVolumeClaim:
-            claimName: auth-db
+            claimName: dashboard-db
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-db
+  name: dashboard-db
   labels:
-    app: auth-db
+    app: dashboard-db
     role: service
 spec:
   selector:
-    app: auth-db
+    app: dashboard-db
     role: service
   type: NodePort
   ports:
-    - name: auth-db
-      port: 5432
-      targetPort: 5432
-      nodePort: 32002
+    - name: dashboard-db
+      port: 5435
+      targetPort: 5435
       protocol: TCP

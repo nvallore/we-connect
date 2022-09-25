@@ -24,7 +24,7 @@ spec:
             - -c
             - python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
         name: auth-backend
-        image: nvallore/ms_auth
+        image: nvallore/ms_auth:latest2
         ports:
           - containerPort: 8000
         env:

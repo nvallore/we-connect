@@ -5,37 +5,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: profile-backend
+  name: dashboard-backend
   labels:
-    app: profile-backend
+    app: dashboard-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: profile-backend
+      app: dashboard-backend
   template:
     metadata:
       labels:
-        app: profile-backend
+        app: dashboard-backend
     spec:
       containers:
       - args:
             - bash
             - -c
-            - python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8001
-        name: profile-backend
-        image: nvallore/ms_profile:latest2
+            - python manage.py makemigrations && python manage.py makemigrations dashboarduser && python manage.py migrate && python manage.py runserver 0.0.0.0:8002
+        name: dashboard-backend
+        image: nvallore/ms_dashboard:latest2
         ports:
-          - containerPort: 8001
+          - containerPort: 8002
         env:
           - name: DB_HOST
-            value: profile-db
+            value: dashboard-db
           - name: DB_NAME
-            value: profile_db
+            value: auth_db
           - name: DB_PASSWORD
             value: postgres
           - name: DB_PORT
-            value: "5433"
+            value: "5435"
           - name: DB_USER
             value: postgres
 
@@ -47,11 +47,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: profile-backend
+  name: dashboard-backend
 spec:
   selector:
-    app: profile-backend
+    app: dashboard-backend
   ports:
     - protocol: TCP
-      port: 8001
-      targetPort: 8001
+      port: 8002
+      targetPort: 8002
