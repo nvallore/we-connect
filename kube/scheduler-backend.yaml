@@ -22,9 +22,9 @@ spec:
       - args:
             - bash
             - -c
-            - npx prisma migrate deploy && npx prisma generate && PORT=3001 node index.js
+            - npx prisma generate && PORT=3001 node index.js
         name: scheduler-backend
-        image: nvallore/ms_scheduler:latest5
+        image: nvallore/ms_scheduler:latest6
         ports:
           - containerPort: 3001
         env:
