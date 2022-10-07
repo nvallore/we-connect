@@ -8,7 +8,8 @@ metadata:
     # nginx.ingress.kubernetes.io/auth-url: http://192.168.49.2/auth/api/hello
     # nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000"
     nginx.ingress.kubernetes.io/cors-allow-headers: X-XSRF-TOKEN,Accept,Accept-Encoding,Accept-Language,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,Origin,Connection,Content-Length,Content-Type,Host,Referer,User-Agent
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     nginx.ingress.kubernetes.io/auth-snippet: | 
